@@ -151,6 +151,8 @@ def generate_one_footprint(pincount, configuration):
     ]
     kicad_mod.append(PolygoneLine(polygone=poly_pin1_marker, layer='F.Fab', width=fab_w))
 
+    slot_width = 1.25 # measured
+    latch_slot_width = 3.00 # measured
     # slot y dims
     ys1 = body_edge['bottom'] + nudge
     ys2 = ys1 - wall_thickness
@@ -166,21 +168,55 @@ def generate_one_footprint(pincount, configuration):
         pass
     elif pincount == 3:
         # 1 offcenter slot, with latch
-        # TODO
-        pass
+
+        # slot
+        slot_center_xoffset = 1.27 # 1.27mm inside pin 3
+        xs1 = end_pos_x - slot_center_xoffset - (slot_width / 2)
+        xs2 = body_edge['left'] - nudge + wall_thickness
+        xs3 = centre_x - (latch_slot_width / 2)
+        xs4 = xs3 + latch_slot_width
+        xs5 = body_edge['right'] + nudge - wall_thickness
+        xs6 = end_pos_x - slot_center_xoffset + (slot_width / 2)
+        poly_slots = [
+                [xs1, ys1],
+                [xs1, ys2],
+                [xs2, ys2],
+                [xs2, ys3],
+                [xs3, ys3],
+                [xs3, ys4],
+                [xs4, ys4],
+                [xs4, ys3],
+                [xs5, ys3],
+                [xs5, ys2],
+                [xs6, ys2],
+                [xs6, ys1]
+            ]
+        kicad_mod.append(PolygoneLine(polygone=poly_slots, layer='F.SilkS',
+            width=silk_w))
+
+        # latch
+        # outside edge of latch
+        xl1 = body_edge['latch_left'] - nudge # TODO: set correctly?
+        xl2 = body_edge['latch_right'] + nudge # TODO: set correctly?
+        kicad_mod.append(PolygoneLine(polygone=[[xl1, yl1], [xl1, yl2],
+            [xl2, yl2], [xl2, yl1]], layer='F.SilkS', width=silk_w))
+        # inside cutout of latch
+        xl3 = body_edge['latch_left'] + wall_thickness + nudge
+        xl4 = body_edge['latch_right'] - wall_thickness - nudge
+        kicad_mod.append(PolygoneLine(polygone=[[xl3, yl1], [xl3, yl3],
+            [xl4, yl3], [xl4, yl1]], layer='F.SilkS', width=silk_w))
+
     else: # 4-25 circuits
         # 2 centered slot, with latch
-        # slots
-        #slot_width = 0.76 # width of peg on crimp housing
-        slot_width = 1.25 # measure
-        slot_center_xoffset = 1.27
-        latch_slot_width = 3.00 # measured
+
+        # slot
+        slot_center_xoffset = 1.27 # 1.27mm inside pins 1, 3
         xs1 = start_pos_x + slot_center_xoffset - (slot_width / 2)
         xs2 = body_edge['left'] - nudge + wall_thickness
         xs3 = centre_x - (latch_slot_width / 2)
         xs4 = xs3 + latch_slot_width
         xs5 = body_edge['right'] + nudge - wall_thickness
-        xs6 = end_pos_x + - slot_center_xoffset + (slot_width / 2)
+        xs6 = end_pos_x - slot_center_xoffset + (slot_width / 2)
         xs7 = xs6 - slot_width
         xs8 = xs1 + slot_width
         poly_slots = [
