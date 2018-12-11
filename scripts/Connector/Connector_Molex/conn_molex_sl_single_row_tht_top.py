@@ -134,12 +134,19 @@ def generate_one_footprint(pincount, configuration):
         **optional_pad_params))
 
     # create fab outline
+    # TODO: add latch to fab outline?
     kicad_mod.append(RectLine(start=[body_edge['left'], body_edge['top']],\
         end=[body_edge['right'], body_edge['bottom']], layer='F.Fab', width=fab_w))
 
     # create silkscreen
-    kicad_mod.append(RectLine(start=[body_edge['left']-nudge, body_edge['top']-nudge],\
-        end=[body_edge['right']+nudge, body_edge['bottom']+nudge], layer='F.SilkS', width=silk_w))
+    # kicad_mod.append(RectLine(start=[body_edge['left']-nudge, body_edge['top']-nudge],\
+    #     end=[body_edge['right']+nudge, body_edge['bottom']+nudge], layer='F.SilkS', width=silk_w))
+    kicad_mod.append(PolygoneLine(polygone=[
+        [body_edge['left'] - nudge, body_edge['bottom'] + nudge],
+        [body_edge['left'] - nudge, body_edge['top'] - nudge],
+        [body_edge['right'] + nudge, body_edge['top'] - nudge],
+        [body_edge['right'] + nudge, body_edge['bottom'] + nudge]],
+        layer='F.SilkS', width=silk_w))
     # pin 1 markers
     kicad_mod.append(Line(start=[body_edge['left']-0.4, -2.0],\
         end=[body_edge['left']-0.4, 2.0], layer='F.SilkS', width=silk_w))
@@ -161,10 +168,10 @@ def generate_one_footprint(pincount, configuration):
     ys4 = body_edge['bottom'] + nudge
     ys3 = ys4 - wall_thickness
     # latch y dims
-    yl1 = ys4
+    # yl1 = ys4 # latch doesn't overlap body
+    yl1 = ys3 # latch overlaps body
     yl2 = body_edge['latch_bottom'] + nudge
     yl3 = yl2 - wall_thickness
-    # TODO: make inside latch cutout overlap big slot wall
     if pincount == 2:
         # 1 centered slot, no latch
         xs1 = centre_x - (slot_width / 2)
@@ -201,6 +208,10 @@ def generate_one_footprint(pincount, configuration):
         xl4 = xs5
         kicad_mod.append(PolygoneLine(polygone=[[xl3, yl1], [xl3, yl3],
             [xl4, yl3], [xl4, yl1]], layer='F.SilkS', width=silk_w))
+        kicad_mod.append(Line(start=(xl3, ys4), end=(xs3, ys4),
+            layer='F.SilkS', width=silk_w))
+        kicad_mod.append(Line(start=(xl4, ys4), end=(xs4, ys4),
+            layer='F.SilkS', width=silk_w))
 
     elif pincount == 3:
         # 1 offcenter slot, with latch
@@ -234,13 +245,21 @@ def generate_one_footprint(pincount, configuration):
         # outside edge of latch
         xl1 = body_edge['latch_left'] - nudge
         xl2 = body_edge['latch_right'] + nudge
-        kicad_mod.append(PolygoneLine(polygone=[[xl1, yl1], [xl1, yl2],
-            [xl2, yl2], [xl2, yl1]], layer='F.SilkS', width=silk_w))
+        kicad_mod.append(PolygoneLine(polygone=[[xl1, ys4], [xl1, yl2],
+            [xl2, yl2], [xl2, ys4]], layer='F.SilkS', width=silk_w))
+        kicad_mod.append(Line(start=(body_edge['left'] - nudge, ys4),
+            end=(xl1, ys4), layer='F.SilkS', width=silk_w))
+        kicad_mod.append(Line(start=(body_edge['right'] + nudge, ys4),
+            end=(xl2, ys4), layer='F.SilkS', width=silk_w))
         # inside cutout of latch
         xl3 = body_edge['latch_left'] + wall_thickness + nudge
         xl4 = body_edge['latch_right'] - wall_thickness - nudge
         kicad_mod.append(PolygoneLine(polygone=[[xl3, yl1], [xl3, yl3],
             [xl4, yl3], [xl4, yl1]], layer='F.SilkS', width=silk_w))
+        kicad_mod.append(Line(start=(xl3, ys4), end=(xs3, ys4),
+            layer='F.SilkS', width=silk_w))
+        kicad_mod.append(Line(start=(xl4, ys4), end=(xs4, ys4),
+            layer='F.SilkS', width=silk_w))
 
     else: # 4-25 circuits
         # 2 centered slot, with latch
@@ -280,8 +299,12 @@ def generate_one_footprint(pincount, configuration):
         # outside edge of latch
         xl1 = body_edge['latch_left'] - nudge
         xl2 = body_edge['latch_right'] + nudge
-        kicad_mod.append(PolygoneLine(polygone=[[xl1, yl1], [xl1, yl2],
-            [xl2, yl2], [xl2, yl1]], layer='F.SilkS', width=silk_w))
+        kicad_mod.append(PolygoneLine(polygone=[[xl1, ys4], [xl1, yl2],
+            [xl2, yl2], [xl2, ys4]], layer='F.SilkS', width=silk_w))
+        kicad_mod.append(Line(start=(body_edge['left'] - nudge, ys4),
+            end=(xl1, ys4), layer='F.SilkS', width=silk_w))
+        kicad_mod.append(Line(start=(body_edge['right'] + nudge, ys4),
+            end=(xl2, ys4), layer='F.SilkS', width=silk_w))
         # inside cutout of latch
         # latch_outside_width = 3 * pitch
         # latch_inside_width = latch_outside_width - 2 * wall_thickness
@@ -291,6 +314,10 @@ def generate_one_footprint(pincount, configuration):
         xl4 = body_edge['latch_right'] - wall_thickness - nudge
         kicad_mod.append(PolygoneLine(polygone=[[xl3, yl1], [xl3, yl3],
             [xl4, yl3], [xl4, yl1]], layer='F.SilkS', width=silk_w))
+        kicad_mod.append(Line(start=(xl3, ys4), end=(xs3, ys4),
+            layer='F.SilkS', width=silk_w))
+        kicad_mod.append(Line(start=(xl4, ys4), end=(xs4, ys4),
+            layer='F.SilkS', width=silk_w))
 
 
     ########################### CrtYd #################################
