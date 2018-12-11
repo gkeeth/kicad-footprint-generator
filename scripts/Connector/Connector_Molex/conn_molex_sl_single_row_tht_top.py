@@ -112,8 +112,9 @@ def generate_one_footprint(pincount, configuration):
         }
     if pincount == 2:
         body_edge['left'] = start_pos_x - (1.395 + wall_thickness)
-        body_edge['right'] = end_pos_x + (1.525 + wall_thickness)
-        # TODO: bottom, top, latch_bottom, latch_left, latch_right
+        body_edge['right'] = end_pos_x + (1.395 + wall_thickness)
+        body_edge['latch_left'] = body_edge['left']
+        body_edge['latch_right'] = body_edge['right']
 
     # create pads
     # kicad_mod.append(Pad(number=1, type=Pad.TYPE_THT, shape=Pad.SHAPE_RECT,
@@ -163,10 +164,44 @@ def generate_one_footprint(pincount, configuration):
     yl1 = ys4
     yl2 = body_edge['latch_bottom'] + nudge
     yl3 = yl2 - wall_thickness
+    # TODO: make inside latch cutout overlap big slot wall
     if pincount == 2:
         # 1 centered slot, no latch
-        # TODO
-        pass
+        xs1 = centre_x - (slot_width / 2)
+        xs2 = body_edge['left'] - nudge + wall_thickness
+        xs3 = centre_x - (latch_slot_width / 2)
+        xs4 = xs3 + latch_slot_width
+        xs5 = body_edge['right'] + nudge - wall_thickness
+        xs6 = centre_x + (slot_width / 2)
+        poly_slots = [
+                [xs1, ys1],
+                [xs1, ys2],
+                [xs2, ys2],
+                [xs2, ys3],
+                [xs3, ys3],
+                [xs3, ys4],
+                [xs4, ys4],
+                [xs4, ys3],
+                [xs5, ys3],
+                [xs5, ys2],
+                [xs6, ys2],
+                [xs6, ys1]
+            ]
+        kicad_mod.append(PolygoneLine(polygone=poly_slots, layer='F.SilkS',
+            width=silk_w))
+
+        # latch
+        # outside edge of latch
+        xl1 = body_edge['latch_left'] - nudge
+        xl2 = body_edge['latch_right'] + nudge
+        kicad_mod.append(PolygoneLine(polygone=[[xl1, yl1], [xl1, yl2],
+            [xl2, yl2], [xl2, yl1]], layer='F.SilkS', width=silk_w))
+        # inside cutout of latch
+        xl3 = xs2
+        xl4 = xs5
+        kicad_mod.append(PolygoneLine(polygone=[[xl3, yl1], [xl3, yl3],
+            [xl4, yl3], [xl4, yl1]], layer='F.SilkS', width=silk_w))
+
     elif pincount == 3:
         # 1 offcenter slot, with latch
 
