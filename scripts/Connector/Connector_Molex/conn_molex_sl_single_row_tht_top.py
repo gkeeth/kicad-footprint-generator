@@ -101,18 +101,19 @@ def generate_one_footprint(pincount, configuration):
     wall_thickness = 1.02
     # outside edge of latch
     body_edge= { # wrong for pincount=2
+        # NOTE: datasheet diagram is upside down relative to this!
         'left':start_pos_x - (1.525 + wall_thickness),
         'right':end_pos_x + (1.525 + wall_thickness),
         'bottom':5.08/2,
         'top':-5.08/2,
-        'latch_top':(-5.08/2) - 1.53,
+        'latch_bottom':(5.08/2) + 1.53,
         'latch_left':centre_x - (pitch * 3 / 2),
         'latch_right':centre_x + (pitch * 3 / 2)
         }
     if pincount == 2:
         body_edge['left'] = start_pos_x - (1.395 + wall_thickness)
         body_edge['right'] = end_pos_x + (1.525 + wall_thickness)
-        # TODO: bottom, top, latch_top, latch_left, latch_right
+        # TODO: bottom, top, latch_bottom, latch_left, latch_right
 
     # create pads
     # kicad_mod.append(Pad(number=1, type=Pad.TYPE_THT, shape=Pad.SHAPE_RECT,
@@ -154,14 +155,14 @@ def generate_one_footprint(pincount, configuration):
     slot_width = 1.25 # measured
     latch_slot_width = 3.00 # measured
     # slot y dims
-    ys1 = body_edge['bottom'] + nudge
-    ys2 = ys1 - wall_thickness
-    ys4 = body_edge['top'] - nudge
-    ys3 = ys4 + wall_thickness
+    ys1 = body_edge['top'] - nudge
+    ys2 = ys1 + wall_thickness
+    ys4 = body_edge['bottom'] + nudge
+    ys3 = ys4 - wall_thickness
     # latch y dims
-    yl1 = body_edge['top'] - nudge
-    yl2 = body_edge['latch_top'] - nudge
-    yl3 = yl2 + wall_thickness
+    yl1 = ys4
+    yl2 = body_edge['latch_bottom'] + nudge
+    yl3 = yl2 - wall_thickness
     if pincount == 2:
         # 1 centered slot, no latch
         # TODO
@@ -171,12 +172,12 @@ def generate_one_footprint(pincount, configuration):
 
         # slot
         slot_center_xoffset = 1.27 # 1.27mm inside pin 3
-        xs1 = end_pos_x - slot_center_xoffset - (slot_width / 2)
+        xs1 = start_pos_x + slot_center_xoffset - (slot_width / 2)
         xs2 = body_edge['left'] - nudge + wall_thickness
         xs3 = centre_x - (latch_slot_width / 2)
         xs4 = xs3 + latch_slot_width
         xs5 = body_edge['right'] + nudge - wall_thickness
-        xs6 = end_pos_x - slot_center_xoffset + (slot_width / 2)
+        xs6 = start_pos_x + slot_center_xoffset + (slot_width / 2)
         poly_slots = [
                 [xs1, ys1],
                 [xs1, ys2],
@@ -196,8 +197,8 @@ def generate_one_footprint(pincount, configuration):
 
         # latch
         # outside edge of latch
-        xl1 = body_edge['latch_left'] - nudge # TODO: set correctly?
-        xl2 = body_edge['latch_right'] + nudge # TODO: set correctly?
+        xl1 = body_edge['latch_left'] - nudge
+        xl2 = body_edge['latch_right'] + nudge
         kicad_mod.append(PolygoneLine(polygone=[[xl1, yl1], [xl1, yl2],
             [xl2, yl2], [xl2, yl1]], layer='F.SilkS', width=silk_w))
         # inside cutout of latch
@@ -259,29 +260,32 @@ def generate_one_footprint(pincount, configuration):
 
     ########################### CrtYd #################################
     cx1 = roundToBase(body_edge['left']-configuration['courtyard_offset']['connector'],
-            configuration['courtyard_grid'])
+            configuration['courtyard_grid']) # left
     cy1 = roundToBase(body_edge['top']-configuration['courtyard_offset']['connector'],
-            configuration['courtyard_grid'])
+            configuration['courtyard_grid']) # top
 
     cx2 = roundToBase(body_edge['latch_left']-configuration['courtyard_offset']['connector'],
-            configuration['courtyard_grid'])
-    cy2 = roundToBase(body_edge['latch_top']-configuration['courtyard_offset']['connector'],
-            configuration['courtyard_grid'])
+            configuration['courtyard_grid']) # latch left
+    cy2 = roundToBase(body_edge['bottom']+configuration['courtyard_offset']['connector'],
+            configuration['courtyard_grid']) # bottom
 
+    cy3 = roundToBase(body_edge['latch_bottom']+configuration['courtyard_offset']['connector'],
+            configuration['courtyard_grid']) # latch bottom
     cx3 = roundToBase(body_edge['latch_right']+configuration['courtyard_offset']['connector'],
-            configuration['courtyard_grid'])
-    cx4 = roundToBase(body_edge['right']+configuration['courtyard_offset']['connector'], configuration['courtyard_grid'])
-    cy3 = roundToBase(body_edge['bottom']+configuration['courtyard_offset']['connector'], configuration['courtyard_grid'])
+            configuration['courtyard_grid']) # latch right
+
+    cx4 = roundToBase(body_edge['right']+configuration['courtyard_offset']['connector'],
+            configuration['courtyard_grid']) # right
 
     crtyd_poly = [
             [cx1, cy1],
-            [cx2, cy1],
+            [cx1, cy2],
             [cx2, cy2],
+            [cx2, cy3],
+            [cx3, cy3],
             [cx3, cy2],
-            [cx3, cy1],
+            [cx4, cy2],
             [cx4, cy1],
-            [cx4, cy3],
-            [cx1, cy3],
             [cx1, cy1]
         ]
     kicad_mod.append(PolygoneLine(polygone=crtyd_poly,
@@ -289,7 +293,7 @@ def generate_one_footprint(pincount, configuration):
 
     ######################### Text Fields ###############################
     addTextFields(kicad_mod=kicad_mod, configuration=configuration, body_edges=body_edge,
-        courtyard={'top':cy2, 'bottom':cy3}, fp_name=footprint_name, text_y_inside_position='top')
+        courtyard={'top':cy1, 'bottom':cy3}, fp_name=footprint_name, text_y_inside_position='top')
 
     ##################### Output and 3d model ############################
     model3d_path_prefix = configuration.get('3d_model_prefix','${KISYS3DMOD}/')
