@@ -145,8 +145,13 @@ def generate_one_footprint(pincount, configuration):
 
     # pin 1 markers
     # TODO: should this size be increased?
-    kicad_mod.append(Line(start=[body_edge['left']-0.4, -2.0],\
-        end=[body_edge['left']-0.4, 2.0], layer='F.SilkS', width=silk_w))
+    # kicad_mod.append(Line(start=[body_edge['left']-0.4, -2.0],\
+    #     end=[body_edge['left']-0.4, 2.0], layer='F.SilkS', width=silk_w))
+
+    kicad_mod.append(Line(start=[body_edge['left']-0.4, -yr2 - 0.4 + nudge],\
+        end=[body_edge['left']-0.4, yr2 + 0.4 - nudge], layer='F.SilkS', width=silk_w))
+    kicad_mod.append(Line(start=[body_edge['left']-0.4, yr2 + 0.4 - nudge],\
+        end=[start_pos_x - 0.4, yr2 + 0.4 - nudge], layer='F.SilkS', width=silk_w))
 
     sl=1
     poly_pin1_marker = [
