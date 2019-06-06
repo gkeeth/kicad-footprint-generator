@@ -208,26 +208,26 @@ def generate_one_footprint(pincount, configuration):
         poly1=[
             {'x': start_pos_x - nudge, 'y': yr1},
             {'x': start_pos_x - nudge, 'y': yr2},
-            {'x': start_pos_x + pitch*slot_location[0] - slot_width/2, 'y': yr2},
-            {'x': start_pos_x + pitch*slot_location[0] - slot_width/2, 'y': yr1}
+            {'x': start_pos_x + pitch*(slot_location[0] - 1) - slot_width/2, 'y': yr2},
+            {'x': start_pos_x + pitch*(slot_location[0] - 1) - slot_width/2, 'y': yr1}
         ]
         poly2=[
             {'x': end_pos_x + nudge, 'y': yr1},
             {'x': end_pos_x + nudge, 'y': yr2},
-            {'x': start_pos_x + pitch*slot_location[0] + slot_width/2, 'y': yr2},
-            {'x': start_pos_x + pitch*slot_location[0] + slot_width/2, 'y': yr1}
+            {'x': start_pos_x + pitch*(slot_location[0] - 1) + slot_width/2, 'y': yr2},
+            {'x': start_pos_x + pitch*(slot_location[0] - 1) + slot_width/2, 'y': yr1}
         ]
         poly3 = [
             {'x': start_pos_x - nudge, 'y':  yr1},
             {'x': start_pos_x - nudge, 'y':  yr3},
-            {'x': start_pos_x + pitch*slot_location[0] - slot_width/2, 'y': yr3},
-            {'x': start_pos_x + pitch*slot_location[0] - slot_width/2, 'y': yr1}
+            {'x': start_pos_x + pitch*(slot_location[0] - 1) - slot_width/2, 'y': yr3},
+            {'x': start_pos_x + pitch*(slot_location[0] - 1) - slot_width/2, 'y': yr1}
         ]
         poly4 = [
             {'x': end_pos_x + nudge, 'y':  yr1},
             {'x': end_pos_x + nudge, 'y':  yr3},
-            {'x': start_pos_x + pitch*slot_location[0] + slot_width/2, 'y': yr3},
-            {'x': start_pos_x + pitch*slot_location[0] + slot_width/2, 'y': yr1}
+            {'x': start_pos_x + pitch*(slot_location[0] - 1) + slot_width/2, 'y': yr3},
+            {'x': start_pos_x + pitch*(slot_location[0] - 1) + slot_width/2, 'y': yr1}
         ]
 
         kicad_mod.append(PolygoneLine(polygone=poly1, layer='F.SilkS', width=silk_w))
@@ -239,38 +239,38 @@ def generate_one_footprint(pincount, configuration):
         poly1=[
             {'x': start_pos_x - nudge, 'y': yr1},
             {'x': start_pos_x - nudge, 'y': yr2},
-            {'x': start_pos_x + pitch*slot_location[0] - slot_width/2, 'y': yr2},
-            {'x': start_pos_x + pitch*slot_location[0] - slot_width/2, 'y': yr1}
+            {'x': start_pos_x + pitch*(slot_location[0] - 1) - slot_width/2, 'y': yr2},
+            {'x': start_pos_x + pitch*(slot_location[0] - 1) - slot_width/2, 'y': yr1}
         ]
         poly2=[
-            {'x': start_pos_x + pitch*slot_location[0] + slot_width/2, 'y': yr1},
-            {'x': start_pos_x + pitch*slot_location[0] + slot_width/2, 'y': yr2},
-            {'x': start_pos_x + pitch*slot_location[1] - slot_width/2, 'y': yr2},
-            {'x': start_pos_x + pitch*slot_location[1] - slot_width/2, 'y': yr1}
+            {'x': start_pos_x + pitch*(slot_location[0] - 1) + slot_width/2, 'y': yr1},
+            {'x': start_pos_x + pitch*(slot_location[0] - 1) + slot_width/2, 'y': yr2},
+            {'x': start_pos_x + pitch*(slot_location[1] - 1) - slot_width/2, 'y': yr2},
+            {'x': start_pos_x + pitch*(slot_location[1] - 1) - slot_width/2, 'y': yr1}
         ]
         poly3=[
             {'x': end_pos_x + nudge, 'y': yr1},
             {'x': end_pos_x + nudge, 'y': yr2},
-            {'x': start_pos_x + pitch*slot_location[1] + slot_width/2, 'y': yr2},
-            {'x': start_pos_x + pitch*slot_location[1] + slot_width/2, 'y': yr1}
+            {'x': start_pos_x + pitch*(slot_location[1] - 1) + slot_width/2, 'y': yr2},
+            {'x': start_pos_x + pitch*(slot_location[1] - 1) + slot_width/2, 'y': yr1}
         ]
         poly4 = [
             {'x': start_pos_x - nudge, 'y':  yr1},
             {'x': start_pos_x - nudge, 'y':  yr3},
-            {'x': start_pos_x + pitch*slot_location[0] - slot_width/2, 'y': yr3},
-            {'x': start_pos_x + pitch*slot_location[0] - slot_width/2, 'y': yr1}
+            {'x': start_pos_x + pitch*(slot_location[0] - 1) - slot_width/2, 'y': yr3},
+            {'x': start_pos_x + pitch*(slot_location[0] - 1) - slot_width/2, 'y': yr1}
         ]
         poly5=[
-            {'x': start_pos_x + pitch*slot_location[0] + slot_width/2, 'y': yr1},
-            {'x': start_pos_x + pitch*slot_location[0] + slot_width/2, 'y': yr3},
-            {'x': start_pos_x + pitch*slot_location[1] - slot_width/2, 'y': yr3},
-            {'x': start_pos_x + pitch*slot_location[1] - slot_width/2, 'y': yr1}
+            {'x': start_pos_x + pitch*(slot_location[0] - 1) + slot_width/2, 'y': yr1},
+            {'x': start_pos_x + pitch*(slot_location[0] - 1) + slot_width/2, 'y': yr3},
+            {'x': start_pos_x + pitch*(slot_location[1] - 1) - slot_width/2, 'y': yr3},
+            {'x': start_pos_x + pitch*(slot_location[1] - 1) - slot_width/2, 'y': yr1}
         ]
         poly6=[
             {'x': end_pos_x + nudge, 'y': yr1},
             {'x': end_pos_x + nudge, 'y': yr3},
-            {'x': start_pos_x + pitch*slot_location[1] + slot_width/2, 'y': yr3},
-            {'x': start_pos_x + pitch*slot_location[1] + slot_width/2, 'y': yr1}
+            {'x': start_pos_x + pitch*(slot_location[1] - 1) + slot_width/2, 'y': yr3},
+            {'x': start_pos_x + pitch*(slot_location[1] - 1) + slot_width/2, 'y': yr1}
         ]
 
         kicad_mod.append(PolygoneLine(polygone=poly1, layer='F.SilkS', width=silk_w))
